@@ -1,7 +1,10 @@
 package main
 
-import "fmt"
+import (
+	"github.com/Louisrca/bloatfish/cmd"
+	_ "github.com/Louisrca/bloatfish/cmd/cli"
+)
 
 func main() {
-	fmt.Println("Hello, Bloatfish 🐡!")
+	cmd.Execute()
 }
