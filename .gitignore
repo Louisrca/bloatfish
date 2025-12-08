@@ -1,0 +1,5 @@
+node_modules/
+go.sum
+src
+unused_packages_report.json
+bloatfish
