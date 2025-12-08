@@ -55,7 +55,6 @@ func AnalyzeDependencies() (*DependencyReport, error) {
 			packageSizes = lock.GetPackageSizes()
 		}
 	}
-
 	// Scan used imports in the code
 	used, err := ScanImportsInProject(".")
 	if err != nil {

@@ -67,6 +67,37 @@ func (n *NPMLockFile) GetPackageSizes() map[string]int64 {
 	return sizes
 }
 
+func calculatePackageSize(packagePath string) int64 {
+
+	// Check if the directory exists
+	info, err := os.Stat(packagePath)
+	if err != nil || !info.IsDir() {
+		return 0
+	}
+
+	var totalSize int64
+
+	err = filepath.WalkDir(packagePath, func(path string, d os.DirEntry, err error) error {
+		if err != nil {
+			return fmt.Errorf(err.Error())
+		}
+
+		if d.IsDir() {
+			return nil
+		}
+
+		info, err := d.Info()
+		if err != nil {
+			return fmt.Errorf(err.Error())
+		}
+
+		totalSize += info.Size()
+		return nil
+	})
+
+	return totalSize
+}
+
 func extractPackageNameFromPath(path string) string {
 	// Remove "node_modules/" prefix
 	path = strings.TrimPrefix(path, "node_modules/")
@@ -87,38 +118,6 @@ func extractPackageNameFromPath(path string) string {
 	}
 
 	return ""
-}
-
-func calculatePackageSize(packagePath string) int64 {
-	fullPath := filepath.Join("node_modules", packagePath)
-
-	// Check if the directory exists
-	info, err := os.Stat(fullPath)
-	if err != nil || !info.IsDir() {
-		return 0
-	}
-
-	var totalSize int64
-
-	err = filepath.WalkDir(fullPath, func(path string, d os.DirEntry, err error) error {
-		if err != nil {
-			return nil // Ignore errors
-		}
-
-		if d.IsDir() {
-			return nil
-		}
-
-		info, err := d.Info()
-		if err != nil {
-			return nil
-		}
-
-		totalSize += info.Size()
-		return nil
-	})
-
-	return totalSize
 }
 
 // LoadLockFile loads the appropriate lock file
