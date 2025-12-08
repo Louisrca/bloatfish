@@ -1,8 +1,7 @@
-package cli
+package cmd
 
 import (
-	"github.com/Louisrca/bloatfish/cmd"
-	"github.com/Louisrca/bloatfish/internal/analyser"
+	"fmt"
 
 	"github.com/spf13/cobra"
 )
@@ -12,11 +11,10 @@ var auditCmd = &cobra.Command{
 	Short: "Audit your web project for environmental impact",
 	Long:  `Run an audit on your web project to analyze its environmental impact based on GreenIT and RGESN principles.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		analyser := analyser.UnusedPackageAnalyser{}
-		analyser.Analyze("./node_modules")
+		fmt.Println("Running full audit...")
 	},
 }
 
 func init() {
-	cmd.RootCmd.AddCommand(auditCmd)
+	RootCmd.AddCommand(auditCmd)
 }
