@@ -2,6 +2,8 @@ package analyzer
 
 import (
 	"strings"
+
+	utils "github.com/Louisrca/bloatfish/internal/utils"
 )
 
 type Framework string
@@ -18,7 +20,7 @@ const (
 
 // DetectFramework detects the main framework of the project
 func DetectFramework(deps []string) Framework {
-	depsSet := buildSet(deps)
+	depsSet := utils.BuildSet(deps)
 
 	// Next.js (check before React because Next includes React)
 	if depsSet["next"] {

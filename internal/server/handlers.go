@@ -1,17 +1,35 @@
 package server
 
 import (
+	"encoding/json"
 	"net/http"
 	"os"
 )
 
-func loadPackageReport(title string) *Page {
-	filename := "./" + title + "_report.json"
-	body, _ := os.ReadFile(filename)
-	return &Page{Title: title, Body: body}
+func loadPackageReport(reportName string) (*Page, error) {
+	filename := "./" + reportName + "_report.json"
+
+	body, err := os.ReadFile(filename)
+	if err != nil {
+		return nil, err
+	}
+
+	var report DependencyReport
+	if err := json.Unmarshal(body, &report); err != nil {
+		return nil, err
+	}
+
+	return &Page{
+		Title: reportName,
+		Body:  &report,
+	}, nil
 }
 
 func ViewHandler(w http.ResponseWriter, r *http.Request) {
-	p := loadPackageReport("unused_packages")
+	p, err := loadPackageReport("unused_packages")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 	ViewPage(w, p)
 }

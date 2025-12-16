@@ -2,12 +2,24 @@ package server
 
 import (
 	"net/http"
+	"path/filepath"
 	"text/template"
 )
 
-const templateDir = "./internal/html/"
+const templateDir = "./internal/app/"
 
 func ViewPage(w http.ResponseWriter, p *Page) {
-	t, _ := template.ParseFiles(templateDir + "packages.html")
-	t.Execute(w, p)
+	tmpl, err := template.ParseFiles(
+		filepath.Join(templateDir, "layout.html"),
+		filepath.Join(templateDir, "index.html"),
+	)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	err = tmpl.Execute(w, p)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
 }

@@ -1,6 +1,7 @@
 go.sum
 
 unused_packages_report.json
+web_audit_report.json
 
 bloatfish
 
