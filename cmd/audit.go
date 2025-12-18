@@ -13,7 +13,7 @@ var auditCmd = &cobra.Command{
 	Long:  `Run an audit on your web project to analyze its environmental impact based on GreenIT and RGESN principles.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("Running full audit...")
-		audit.DeepAudit("https://fastapi.tiangolo.com/#create-it")
+		audit.DeepAudit("https://vite.dev/")
 	},
 }
 
