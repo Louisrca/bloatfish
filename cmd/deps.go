@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/Louisrca/bloatfish/internal/analyzer"
+	utils "github.com/Louisrca/bloatfish/internal/utils"
 	"github.com/spf13/cobra"
 )
 
@@ -19,7 +20,7 @@ var depsCmd = &cobra.Command{
 			return
 		}
 
-		analyzer.WriteJSONReport(report)
+		utils.WriteJSONReport(report, "unused_packages_report.json")
 	},
 }
 

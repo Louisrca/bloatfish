@@ -1,4 +1,4 @@
-package analyzer
+package utils
 
 import (
 	"encoding/json"
@@ -6,7 +6,13 @@ import (
 	"os"
 )
 
-func toPackageInfoList(names []string, sizes map[string]int64) []PackageInfo {
+type PackageInfo struct {
+	Name    string `json:"name"`
+	Size    int64  `json:"size"`     // Taille en octets
+	SizeStr string `json:"size_str"` // Taille formatée (ex: "1.2 MB")
+}
+
+func ToPackageInfoList(names []string, sizes map[string]int64) []PackageInfo {
 	seen := make(map[string]bool)
 	result := []PackageInfo{}
 
@@ -17,7 +23,7 @@ func toPackageInfoList(names []string, sizes map[string]int64) []PackageInfo {
 			result = append(result, PackageInfo{
 				Name:    name,
 				Size:    size,
-				SizeStr: formatSize(size),
+				SizeStr: FormatSize(size),
 			})
 		}
 	}
@@ -25,8 +31,8 @@ func toPackageInfoList(names []string, sizes map[string]int64) []PackageInfo {
 	return result
 }
 
-func WriteJSONReport(report interface{}) {
-	file, err := os.Create("unused_packages_report.json")
+func WriteJSONReport(report interface{}, filename string) {
+	file, err := os.Create(filename)
 	if err != nil {
 		fmt.Printf("Failed to create report file: %v\n", err)
 		return
@@ -40,25 +46,25 @@ func WriteJSONReport(report interface{}) {
 	}
 }
 
-func findLockFile() string {
-	if fileExists("package-lock.json") {
+func FindLockFile() string {
+	if FileExists("package-lock.json") {
 		return "package-lock.json"
 	}
-	if fileExists("yarn.lock") {
+	if FileExists("yarn.lock") {
 		return "yarn.lock"
 	}
-	if fileExists("pnpm-lock.yaml") {
+	if FileExists("pnpm-lock.yaml") {
 		return "pnpm-lock.yaml"
 	}
 	return ""
 }
 
-func fileExists(path string) bool {
+func FileExists(path string) bool {
 	_, err := os.Stat(path)
 	return err == nil
 }
 
-func buildSet(list []string) map[string]bool {
+func BuildSet(list []string) map[string]bool {
 	set := make(map[string]bool)
 	for _, item := range list {
 		set[item] = true
@@ -66,7 +72,7 @@ func buildSet(list []string) map[string]bool {
 	return set
 }
 
-func formatSize(bytes int64) string {
+func FormatSize(bytes int64) string {
 	const unit = 1024
 	if bytes < unit {
 		return fmt.Sprintf("%d B", bytes)

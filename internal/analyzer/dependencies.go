@@ -1,21 +1,17 @@
 package analyzer
 
-type PackageInfo struct {
-	Name    string `json:"name"`
-	Size    int64  `json:"size"`     // Taille en octets
-	SizeStr string `json:"size_str"` // Taille formatée (ex: "1.2 MB")
-}
+import utils "github.com/Louisrca/bloatfish/internal/utils"
 
 type DependencyReport struct {
-	Declared     []PackageInfo `json:"declared"`
-	Used         []PackageInfo `json:"used"`
-	Indirect     []PackageInfo `json:"indirect"`
-	Unused       []PackageInfo `json:"unused"`
-	UnusedDev    []PackageInfo `json:"unused_dev"`
-	Framework    string        `json:"framework"`
-	TotalSize    int64         `json:"total_size"`
-	TotalSizeStr string        `json:"total_size_str"`
-	Errors       []string      `json:"errors"`
+	Declared     []utils.PackageInfo `json:"declared"`
+	Used         []utils.PackageInfo `json:"used"`
+	Indirect     []utils.PackageInfo `json:"indirect"`
+	Unused       []utils.PackageInfo `json:"unused"`
+	UnusedDev    []utils.PackageInfo `json:"unused_dev"`
+	Framework    string              `json:"framework"`
+	TotalSize    int64               `json:"total_size"`
+	TotalSizeStr string              `json:"total_size_str"`
+	Errors       []string            `json:"errors"`
 }
 
 // AnalyzeDependencies analyzes all dependencies of the project
@@ -40,7 +36,7 @@ func AnalyzeDependencies() (*DependencyReport, error) {
 	frameworkDevTools := GetFrameworkDevTools(framework)
 
 	// Find lockfile and load sizes
-	lockfile := findLockFile()
+	lockfile := utils.FindLockFile()
 	packageSizes := make(map[string]int64)
 
 	var installed []string
@@ -62,9 +58,9 @@ func AnalyzeDependencies() (*DependencyReport, error) {
 	}
 
 	// Create sets for efficient comparison
-	declaredSet := buildSet(allDeclared)
-	usedSet := buildSet(used)
-	installedSet := buildSet(installed)
+	declaredSet := utils.BuildSet(allDeclared)
+	usedSet := utils.BuildSet(used)
+	installedSet := utils.BuildSet(installed)
 
 	// Calculate unused dependencies (ONLY dependencies, not devDependencies)
 	unused := []string{}
@@ -121,19 +117,18 @@ func AnalyzeDependencies() (*DependencyReport, error) {
 	}
 
 	// Convert to PackageInfo with sizes
-	report.Declared = toPackageInfoList(allDeclared, packageSizes)
-	report.Used = toPackageInfoList(usedList, packageSizes)
-	report.Indirect = toPackageInfoList(indirect, packageSizes)
-	report.Unused = toPackageInfoList(unused, packageSizes)
-	report.UnusedDev = toPackageInfoList(unusedDev, packageSizes)
-
+	report.Declared = utils.ToPackageInfoList(allDeclared, packageSizes)
+	report.Used = utils.ToPackageInfoList(usedList, packageSizes)
+	report.Indirect = utils.ToPackageInfoList(indirect, packageSizes)
+	report.Unused = utils.ToPackageInfoList(unused, packageSizes)
+	report.UnusedDev = utils.ToPackageInfoList(unusedDev, packageSizes)
 	// Calculate total size
 	var totalSize int64
 	for _, pkg := range report.Used {
 		totalSize += pkg.Size
 	}
 	report.TotalSize = totalSize
-	report.TotalSizeStr = formatSize(totalSize)
+	report.TotalSizeStr = utils.FormatSize(totalSize)
 
 	return report, nil
 }
