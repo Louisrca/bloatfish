@@ -6,7 +6,7 @@ import (
 	"text/template"
 )
 
-const templateDir = "./internal/app/"
+const templateDir = "./app/"
 
 func ViewPage(w http.ResponseWriter, p *Page) {
 	tmpl, err := template.ParseFiles(

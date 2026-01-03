@@ -90,7 +90,7 @@ func ScoreWebAudit(requests int, HTMLSizeKB int, DomNodes int) (int, string) {
 	return score, "N/A"
 }
 
-func DeepAudit(url string) (*WebAuditResult, error) {
+func chromeDPAudit(url string) (*utils.ChromeDPReport, error) {
 	var domNodes int
 	var HTMLSizeKB string
 
@@ -130,18 +130,7 @@ func DeepAudit(url string) (*WebAuditResult, error) {
 
 	fmt.Println("grade:", grade, "score:", score)
 
-	utils.WriteJSONReport(WebAuditResult{
-		URL:           url,
-		Requests:      requestCount,
-		TransferredKB: float64(totalBytes) / 1024,
-		DomNodes:      domNodes,
-		HTMLSizeKB:    int(math.Round(float64(len(HTMLSizeKB)) / 1024)),
-		Score:         score,
-		Grade:         grade,
-		Deep:          true,
-	}, "web_audit_report.json")
-
-	return &WebAuditResult{
+	return &utils.ChromeDPReport{
 		URL:           url,
 		Requests:      requestCount,
 		TransferredKB: float64(totalBytes) / 1024,
@@ -151,4 +140,21 @@ func DeepAudit(url string) (*WebAuditResult, error) {
 		Grade:         grade,
 		Deep:          true,
 	}, nil
+}
+
+func DeepAudit(urls []string) []*utils.ChromeDPReport {
+	var deepAuditReports []*utils.ChromeDPReport
+	for _, url := range urls {
+		fmt.Printf("Auditing %s...\n", url)
+		result, err := chromeDPAudit(url)
+		if err != nil {
+			fmt.Printf("❌ Error auditing %s: %v\n", url, err)
+			continue
+		}
+		fmt.Printf("✅ Audit completed for %s: %+v\n", url, result)
+		deepAuditReports = append(deepAuditReports, result)
+	}
+
+	return deepAuditReports
+
 }

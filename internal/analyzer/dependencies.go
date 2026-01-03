@@ -1,6 +1,10 @@
 package analyzer
 
-import utils "github.com/Louisrca/bloatfish/internal/utils"
+import (
+	"fmt"
+
+	utils "github.com/Louisrca/bloatfish/internal/utils"
+)
 
 type DependencyReport struct {
 	Declared     []utils.PackageInfo `json:"declared"`
@@ -15,13 +19,15 @@ type DependencyReport struct {
 }
 
 // AnalyzeDependencies analyzes all dependencies of the project
-func AnalyzeDependencies() (*DependencyReport, error) {
-	report := &DependencyReport{}
+func AnalyzeDependencies() (*utils.DependencyReport, error) {
+	report := &utils.DependencyReport{}
 
 	//Load Dependencies Separately
 	deps, devDeps, err := LoadDependenciesSeparately("package.json")
 	if err != nil {
 		report.Errors = append(report.Errors, "Could not load package.json: "+err.Error())
+		fmt.Println("Error reading lockfile: Could not read lockfile")
+
 	}
 
 	allDeclared := append([]string{}, deps...)
@@ -42,10 +48,13 @@ func AnalyzeDependencies() (*DependencyReport, error) {
 	var installed []string
 	if lockfile == "" {
 		report.Errors = append(report.Errors, "No lockfile found (npm/yarn/pnpm). Cannot resolve indirect dependencies.")
+		fmt.Println("No lockfile found. Indirect dependencies and package sizes may be inaccurate.\n")
 	} else {
 		lock, err := LoadLockFile(lockfile)
 		if err != nil {
 			report.Errors = append(report.Errors, "Could not read lockfile: "+err.Error())
+			fmt.Println("Error reading lockfile: Could not read lockfile")
+
 		} else if lock != nil {
 			installed = lock.AllInstalledPackages()
 			packageSizes = lock.GetPackageSizes()

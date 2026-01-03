@@ -26,7 +26,7 @@ func loadPackageReport(reportName string) (*Page, error) {
 }
 
 func ViewHandler(w http.ResponseWriter, r *http.Request) {
-	p, err := loadPackageReport("unused_packages")
+	p, err := loadPackageReport("full_audit")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

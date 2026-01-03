@@ -1,7 +1,6 @@
 package server
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 )
@@ -29,12 +28,12 @@ type Page struct {
 }
 
 func StartServer() {
-	http.HandleFunc("/", ViewHandler)
-	http.Handle("/static/",
-		http.StripPrefix("/static/",
-			http.FileServer(http.Dir("./internal/app/static")),
-		),
-	)
-	fmt.Println("Starting server on http://localhost:8080")
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	log.Println("Starting web UI on http://localhost:8080")
+
+	fs := http.FileServer(http.Dir("./app/bloatfish-app/dist"))
+	http.Handle("/", fs)
+
+	if err := http.ListenAndServe(":8080", nil); err != nil {
+		log.Fatal(err)
+	}
 }
