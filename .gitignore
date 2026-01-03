@@ -1,12 +1,14 @@
-node_modules/
 go.sum
-src
-unused_packages_report.json
+
+full_audit_report.json
+
 bloatfish
+
 bloatfish-darwin-amd64
 bloatfish-darwin-arm64
 bloatfish-linux-amd64
 bloatfish-linux-arm64
 bloatfish-windows-amd64 
 @bloatfish
+
 build.sh
